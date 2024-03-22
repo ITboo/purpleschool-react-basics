@@ -1,0 +1,21 @@
+.journal-item {
+    border-radius: 3px;
+    background-color: rgba(36, 36, 36, 0.695);
+    padding: 20px;
+}
+
+.journal-item__header {
+    font-size: 18px;
+    font-weight: 600;
+    font-style: normal;
+    line-height: 28px;
+}
+
+.journal-item__body {
+    display: flex;
+    gap: 10px;
+}
+
+.journal-item__text {
+    overflow: hidden;
+}
