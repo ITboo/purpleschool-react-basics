@@ -6,6 +6,7 @@ import LeftPanel from './layouts/LeftPanel/LeftPanel';
 import Body from './layouts/Body/Body';
 import Header from './components/Header/Header';
 import JournalList from './components/JournalList/JournalList';
+import JournalForm from './components/JournalForm/JournalForm';
 
 function App() {
 
@@ -21,6 +22,7 @@ function App() {
 			text: 'Lorem ipsum...'
 		}
 	];
+
 
 	return (
 		<div className='app'>
@@ -44,7 +46,9 @@ function App() {
 					</CardButton>
 				</JournalList>
 			</LeftPanel>
-			<Body>Body</Body>
+			<Body>
+				<JournalForm />
+			</Body>
 		</div>
 	);
 }
