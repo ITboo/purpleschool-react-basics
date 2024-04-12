@@ -10,7 +10,7 @@ import JournalForm from './components/JournalForm/JournalForm';
 import { useState } from 'react';
 
 const INITIAL_DATA = [
-	{
+	/*{
 		id: 1,
 		title: 'Подготовка к курсам',
 		date: new Date(),
@@ -21,7 +21,7 @@ const INITIAL_DATA = [
 		title: 'Поход',
 		date: new Date(),
 		text: 'Lorem ipsum...'
-	}
+	}*/
 ];
 function App() {
 	const [items, setItems] = useState(INITIAL_DATA);
@@ -48,7 +48,8 @@ function App() {
 				<Header />
 				<JournalAddButton />
 				<JournalList>
-					{items.sort(sortItems).map(el => (
+					{items.length === 0 && <p>Записей пока нет, добавьте первую</p>}
+					{items.length > 0 && items.sort(sortItems).map(el => (
 						<CardButton key={el.id}>
 							<JournalItem
 								text={el.text}
