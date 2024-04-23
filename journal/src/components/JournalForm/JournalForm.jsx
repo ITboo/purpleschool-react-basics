@@ -1,62 +1,46 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useReducer } from 'react';
 import Button from '../Button/Button';
-
+import { INITIAL_STATE, formReducer } from './JournalForm.state.js';
 import styles from './JournalForm.module.css';
 
-const INITIAL_STATE = {
-	title: true,
-	date: true,
-	text: true
-};
 const JournalForm = ({ onSubmit }) => {
-	const [validFormState, setValidFormState] = useState(INITIAL_STATE);
+	const [formState, dispatchForm] = useReducer(formReducer, INITIAL_STATE);
+	const { isValid, isFormReadyToSubmit, values } = formState;
 
 	useEffect(() => {
 		let timerId;
-		if (!validFormState.date || !validFormState.text || !validFormState.title) {
+		if (!isValid.date || !isValid.text || !isValid.title) {
 			timerId = setTimeout(() => {
-				setValidFormState(INITIAL_STATE);
+				dispatchForm({ type: 'RESET_VALIDITY' });
 			}, 2000);
 		}
 		return () => {
 			clearTimeout(timerId);
 		};
-	}, [validFormState]);
+	}, [isValid]);
+
+	useEffect(() => {
+		if (isFormReadyToSubmit) {
+			onSubmit(values);
+			dispatchForm({ type: 'CLEAR' });
+		}
+	}, [isFormReadyToSubmit]);
+
+	const onChange = (e) => {
+		dispatchForm({ type: 'SET_VALUE', payload: { [e.target.name]: e.target.value } });
+	};
 
 	const addPost = (e) => {
 		e.preventDefault();
-		const formData = new FormData(e.target);
-		const formProps = Object.fromEntries(formData);
-		let isValid = true;
-		if (!formProps.title?.trim().length) {
-			setValidFormState(state => ({ ...state, title: false }));
-			isValid = false;
-		} else {
-			setValidFormState(state => ({ ...state, title: true }));
-		}
-		if (!formProps.text?.trim().length) {
-			setValidFormState(state => ({ ...state, text: false }));
-			isValid = false;
-		} else {
-			setValidFormState(state => ({ ...state, text: true }));
-		}
-		if (!formProps.date) {
-			setValidFormState(state => ({ ...state, date: false }));
-			isValid = false;
-		} else {
-			setValidFormState(state => ({ ...state, date: true }));
-		}
-		if (!isValid) {
-			return;
-		}
-		onSubmit(formProps);
+		dispatchForm({ type: 'SUBMIT' });
 	};
+
 	return (
 		<form className={styles['journal-form']} onSubmit={addPost}>
-			<input name="title" type="text" className={`${styles['input']} ${validFormState.title ? '' : styles['invalid']}`} />
-			<input name="tag" type="text" />
-			<input name="date" type="date" className={`${styles['input']} ${validFormState.date ? '' : styles['invalid']}`} />
-			<textarea name="text" id="" cols="30" rows="10" className={`${styles['input']} ${validFormState.text ? '' : styles['invalid']}`}></textarea>
+			<input onChange={onChange} value={values.title} name="title" type="text" className={`${styles['input']} ${isValid.title ? '' : styles['invalid']}`} />
+			<input onChange={onChange} value={values.tag} name="tag" type="text" />
+			<input onChange={onChange} value={values.date} name="date" type="date" className={`${styles['input']} ${isValid.date ? '' : styles['invalid']}`} />
+			<textarea onChange={onChange} value={values.post} name="post" id="" cols="30" rows="10" className={`${styles['input']} ${isValid.text ? '' : styles['invalid']}`}></textarea>
 			<Button text='Сохранить' />
 		</form>
 	);
