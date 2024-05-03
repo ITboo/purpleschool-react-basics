@@ -15,7 +15,7 @@ function JournalList({ items }) {
 		return <p>Записей пока нет, добавьте первую</p>;
 	}
 
-	return	<div className="jourlan-list">
+	return	<div className="journal-list">
 		{items.sort(sortItems).map(el => (
 			<CardButton key={el.id}>
 				<JournalItem
