@@ -1,9 +1,7 @@
 import './Body.css';
 
-const Body = ({ children }) => {
+export default function Body({children}) {
 	return (
 		<div className='body'>{children}</div>
 	);
-};
-
-export default Body;
+}

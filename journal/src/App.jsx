@@ -1,14 +1,19 @@
+import {useState} from 'react';
+
+import {useLocalStorage} from './hooks/useLocalStorage.hook.js';
+import {UserContextProvider} from './context/user.context.jsx';
+
+import LeftPanel from './layout/LeftPanel/LeftPanel.jsx';
+import Body from './layout/Body/Body.jsx';
+import Header from './components/Header/Header.jsx';
+import JournalList from './components/JournalList/JournalList.jsx';
+import JournalAddButton from './components/JournalAddButton/JournalAddButton.jsx';
+import JournalForm from './components/JournalForm/JournalForm.jsx';
+
 import './App.css';
-import JournalAddButton from './components/JournalAddButton/JournalAddButton';
-import LeftPanel from './layouts/LeftPanel/LeftPanel';
-import Body from './layouts/Body/Body';
-import Header from './components/Header/Header';
-import JournalList from './components/JournalList/JournalList';
-import JournalForm from './components/JournalForm/JournalForm';
-import { useLocalStorage } from './hooks/useLocalStorage.hook';
 
 function mapItems(items) {
-	if (!items) {
+	if (!items) { 
 		return [];
 	}
 	return items.map(i => ({
@@ -19,29 +24,55 @@ function mapItems(items) {
 
 function App() {
 
-	const [items, setItems] = useLocalStorage('data');
+	const [note, addNote] = useLocalStorage('data');
+	const [selectedItem, setSelectedItem] = useState(null);
 
-	const addItem = item => {
-		setItems([...mapItems(items), {
-			title: item.title,
-			text: item.text,
-			date: new Date(item.i),
-			id: items.length > 0 ? Math.max(...items.map(i => i.id)) + 1 : 1
-		}]);
+	const addJournalItem = (addingNote) => {
+		if (!addingNote.id) {
+			addNote([
+				...mapItems(note), {
+					...addingNote,
+					id: note.length > 0 ? Math.max(...note.map(i => i.id)) + 1 : 1,
+					date: new Date(addingNote.date)
+				}
+			]
+			);
+		} else {
+			addNote([
+				...mapItems(note).map(
+					i => {
+						if (i.id === addingNote.id) {
+							return {...addingNote
+							};
+						}
+						return i;
+					}
+				)]);
+		}
+
+	};
+
+	const deleteJournalItem = (id) => {
+		addNote([...note.filter(note => note.id !== id)]);
 	};
 
 	return (
-		<div className='app'>
-
-			<LeftPanel>
-				<Header />
-				<JournalAddButton />
-				<JournalList items={mapItems(items)} />
-			</LeftPanel>
-			<Body>
-				<JournalForm onSubmit={addItem} />
-			</Body>
-		</div>
+		<UserContextProvider>
+			<div className='app'>
+				<LeftPanel>
+					<Header />
+					<JournalAddButton clearForm={() => setSelectedItem(null)}/>
+					<JournalList items={mapItems(note)} selectItem={setSelectedItem}/>
+				</LeftPanel> 
+				<Body>
+					<JournalForm
+						inputData={addJournalItem}
+						data={selectedItem}
+						onDelete={deleteJournalItem}
+					/>
+				</Body>
+			</div>
+		</UserContextProvider>
 	);
 }
 

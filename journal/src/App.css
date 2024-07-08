@@ -1,9 +1,4 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-}
-
-.app{
-  display: flex;
-  justify-content: space-between;
+.app {
+    display: flex;
+    padding: 30px;
 }
